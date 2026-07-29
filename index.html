@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abokina - Entraide Communautaire</title>
+
+<style>
+/* ==========================================
+   1. VARIABLES & RESET
+   ========================================== */
+:root {
+    --primary: #00875A;
+    --primary-dark: #006644;
+    --primary-light: #E6F4EA;
+    --whatsapp: #25D366;
+    --bg-main: #F8F9FA;
+    --card-bg: #FFFFFF;
+    --text-dark: #172B4D;
+    --text-muted: #6B778C;
+    --border: #DFE1E6;
+    --urgent-bg: #FFEBE6;
+    --urgent-text: #DE350B;
+    --verified-bg: #EAE6FF;
+    --verified-text: #403294;
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 20px;
+    --shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background: var(--bg-main);
+    color: var(--text-dark);
+    padding-bottom: 90px;
+}
+
+/* ==========================================
+   2. EN-TÊTE COMPACT & SELECTEUR DE LANGUE
+   ========================================== */
+header {
+    background: var(--primary);
+    color: white;
+    padding: 16px 20px 20px;
+    border-radius: 0 0 24px 24px;
+    position: relative;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Selecteur de Langues */
+.lang-select-wrapper {
+    position: relative;
+}
+
+.lang-select {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 20px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    outline: none;
+    cursor: pointer;
+}
+
+.lang-select option {
+    background: white;
+    color: var(--text-dark);
+}
+
+.notif-wrapper { position: relative; }
+
+.notif-btn {
+    background: rgba(255,255,255,0.2);
+    border: none; width: 36px; height: 36px;
+    border-radius: 50%; color: white; font-size: 16px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+
+.notif-badge {
+    position: absolute; top: -2px; right: -2px;
+    background: #FF5630; color: white; font-size: 10px; font-weight: 700;
+    width: 18px; height: 18px; border-radius: 50%;
+    display: none; align-items: center; justify-content: center;
+    border: 2px solid var(--primary);
+}
+
+.notif-popover {
+    display: none; position: absolute; top: 48px; right: 0;
+    width: 290px; background: white; border-radius: var(--radius-md);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15); z-index: 200; overflow: hidden; color: var(--text-dark);
+}
+
+.notif-popover.active { display: block; }
+.notif-header { padding: 12px 16px; background: #FAFBFC; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.notif-header h4 { font-size: 13px; font-weight: 700; }
+.notif-list { max-height: 250px; overflow-y: auto; }
+.notif-item { padding: 12px 16px; border-bottom: 1px solid #F4F5F7; font-size: 12px; display: flex; gap: 10px; align-items: flex-start; }
+.notif-item.unread { background: var(--primary-light); }
+.notif-item p { margin-top: 2px; color: var(--text-muted); font-size: 11px; }
+
+.user-pill {
+    background: white; color: var(--primary-dark);
+    border: none; padding: 6px 12px; border-radius: 20px;
+    font-size: 12px; font-weight: 700; cursor: pointer;
+}
+
+.search-box {
+    display: flex; align-items: center; background: white;
+    border-radius: 30px; padding: 10px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.search-box input {
+    border: none; outline: none; width: 100%; font-size: 14px; margin-left: 8px; color: var(--text-dark);
+}
+
+/* ==========================================
+   3. CATÉGORIES & VUES
+   ========================================== */
+.container { padding: 20px 16px; }
+
+.categories-scroll {
+    display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none;
+}
+.categories-scroll::-webkit-scrollbar { display: none; }
+
+.cat-item {
+    min-width: 72px; background: white; padding: 12px 8px; border-radius: var(--radius-md);
+    text-align: center; font-size: 11px; font-weight: 600; box-shadow: var(--shadow);
+    cursor: pointer; border: 1.5px solid transparent; transition: all 0.2s;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+
+.cat-item.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+.cat-icon { font-size: 20px; }
+
+/* ==========================================
+   4. FIL D'ACTUALITÉ, PROFIL & CHAT
+   ========================================== */
+.section-header { display: flex; justify-content: space-between; align-items: center; margin: 20px 0 12px; }
+.section-header h2 { font-size: 18px; font-weight: 700; }
+
+.post-card {
+    background: white; border-radius: var(--radius-md); padding: 16px;
+    margin-bottom: 14px; box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.03);
+}
+
+.post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.author-wrapper { display: flex; align-items: center; gap: 10px; }
+.avatar {
+    width: 42px; height: 42px; border-radius: 50%; background: var(--primary);
+    color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;
+}
+.author-info h4 { font-size: 14px; font-weight: 700; }
+.author-info p { font-size: 11px; color: var(--text-muted); }
+
+.badge-tag { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+.badge-urgent { background: var(--urgent-bg); color: var(--urgent-text); }
+.badge-verified { background: var(--verified-bg); color: var(--verified-text); }
+
+.post-body { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+.post-content { flex: 1; }
+.post-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; color: var(--text-dark); }
+.post-desc { font-size: 13px; color: var(--text-muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+.post-thumb { width: 76px; height: 76px; border-radius: 12px; object-fit: cover; background: #eee; flex-shrink: 0; }
+.post-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid #FAFBFC; }
+.post-stats { display: flex; gap: 14px; font-size: 12px; color: var(--text-muted); }
+
+.stat-item { display: flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; padding: 4px 8px; border-radius: 12px; }
+.stat-item.liked { color: #DE350B; font-weight: 700; }
+
+.btn-help-pill {
+    background: var(--primary-light); color: var(--primary); border: none;
+    padding: 8px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; gap: 4px;
+}
+.btn-help-pill:disabled { background: #EAE6FF; color: #403294; }
+.btn-delete-icon { background: none; border: none; color: #DE350B; font-size: 16px; cursor: pointer; }
+
+/* PROFIL & CHAT UI */
+.profile-card { background: white; border-radius: var(--radius-md); padding: 20px; text-align: center; box-shadow: var(--shadow); margin-bottom: 20px; }
+.profile-avatar { width: 70px; height: 70px; border-radius: 50%; background: var(--primary); color: white; font-size: 28px; font-weight: bold; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+.btn-logout { background: #FFEBE6; color: #DE350B; border: none; padding: 10px 20px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 12px; }
+
+/* MESSAGERIE VUE */
+.chat-threads-list { display: flex; flex-direction: column; gap: 10px; }
+.thread-card { background: white; padding: 14px; border-radius: var(--radius-md); display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow); cursor: pointer; }
+.thread-info { flex: 1; }
+.thread-info h4 { font-size: 14px; font-weight: 700; }
+.thread-info p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+/* CHAT MODAL / BOX */
+.chat-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 2000; flex-direction: column; }
+.chat-modal.active { display: flex; }
+.chat-modal-header { background: var(--primary); color: white; padding: 16px; display: flex; align-items: center; gap: 12px; }
+.chat-modal-header h3 { font-size: 16px; flex: 1; }
+.chat-messages { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #F4F5F7; }
+.msg-bubble { max-width: 80%; padding: 10px 14px; border-radius: 16px; font-size: 13px; line-height: 1.4; word-break: break-word; }
+.msg-bubble.me { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+.msg-bubble.other { background: white; color: var(--text-dark); align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.chat-input-bar { padding: 12px; background: white; display: flex; gap: 8px; border-top: 1px solid var(--border); align-items: center; }
+.chat-input-bar input { flex: 1; border: 1px solid var(--border); border-radius: 20px; padding: 10px 16px; outline: none; font-size: 13px; }
+.chat-input-bar button { background: var(--primary); color: white; border: none; padding: 10px 16px; border-radius: 20px; font-weight: 700; cursor: pointer; }
+
+.btn-mic { background: #E6F4EA; color: var(--primary); border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.btn-mic.recording { background: #FFEBE6; color: #DE350B; animation: pulse 1s infinite; }
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+audio { max-width: 200px; height: 36px; margin-top: 4px; }
+
+/* MODALES STRUCTURALES */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1000; align-items: flex-end; }
+.modal.active { display: flex; }
+.modal-content { background: white; width: 100%; max-height: 90vh; border-radius: 24px 24px 0 0; padding: 24px; overflow-y: auto; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.modal-header h3 { font-size: 18px; color: var(--primary); }
+.close-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted); }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+.form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 12px; font-size: 13px; outline: none; }
+.urgency-selector { display: flex; gap: 8px; }
+.urgency-btn { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 20px; background: white; font-size: 12px; font-weight: 700; cursor: pointer; text-align: center; }
+.urgency-btn.selected { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+.btn-primary { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 30px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+
+/* ==========================================
+   5. BOUTON FLOTTANT (FAB) ET NAV CORRIGÉS
+   ========================================== */
+.fab {
+    position: fixed;
+    right: 20px;
+    bottom: 80px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    font-weight: bold;
+    box-shadow: 0 6px 16px rgba(0, 135, 90, 0.4);
+    z-index: 99;
+    cursor: pointer;
+    border: none;
+    outline: none;
+}
+
+nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: white;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 0;
+    border-top: 1px solid #EBECF0;
+    z-index: 100;
+}
+
+nav div {
+    flex: 1;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+nav div.active {
+    color: var(--primary);
+}
+
+nav div span {
+    font-size: 20px;
+    display: block;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-top">
+        <div class="brand">🤝 Abokina</div>
+        <div class="header-actions">
+            <!-- Sélecteur de langue -->
+            <div class="lang-select-wrapper">
+                <select id="langSelect" class="lang-select">
+                    <option value="fr">🇫🇷 FR</option>
+                    <option value="ha">🇳🇬 Haoussa</option>
+                    <option value="ff">🇳🇪 Peulh</option>
+                    <option value="en">🇬🇧 EN</option>
+                </select>
+            </div>
+
+            <div class="notif-wrapper">
+                <button class="notif-btn" id="btnNotif">
+                    🔔 <span class="notif-badge" id="notifBadge">0</span>
+                </button>
+                <div class="notif-popover" id="notifPopover">
+                    <div class="notif-header">
+                        <h4 data-i18n="notifications">Notifications</h4>
+                        <span id="notifCountText" style="font-size:11px; color:var(--text-muted);">0 nouvelle(s)</span>
+                    </div>
+                    <div class="notif-list" id="notifList">
+                        <p style="text-align:center; padding:15px; font-size:12px; color:var(--text-muted);" data-i18n="noNotif">Aucune notification</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="authContainer">
+                <button class="user-pill" id="btnOpenAuth" data-i18n="login">Connexion</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-box">
+        🔍 <input type="search" id="searchInput" placeholder="Rechercher une aide, un lieu..." data-i18n-ph="searchPlaceholder">
+    </div>
+</header>
+
+<!-- VUE ACCUEIL -->
+<div class="container" id="viewHome">
+    <div class="categories-scroll" id="categoriesContainer">
+        <div class="cat-item active" data-category="Toutes"><span class="cat-icon">🟩</span><span data-i18n="catAll">Toutes</span></div>
+        <div class="cat-item" data-category="Urgence"><span class="cat-icon">🚨</span><span data-i18n="catUrgent">Urgence</span></div>
+        <div class="cat-item" data-category="Santé"><span class="cat-icon">❤️</span><span data-i18n="catHealth">Santé</span></div>
+        <div class="cat-item" data-category="Emploi"><span class="cat-icon">💼</span><span data-i18n="catJob">Emploi</span></div>
+        <div class="cat-item" data-category="Logement"><span class="cat-icon">🏠</span><span data-i18n="catHousing">Logement</span></div>
+        <div class="cat-item" data-category="Éducation"><span class="cat-icon">🎓</span><span data-i18n="catEdu">Éducation</span></div>
+        <div class="cat-item" data-category="Bénévolat"><span class="cat-icon">🤝</span><span data-i18n="catVolunteer">Bénévolat</span></div>
+    </div>
+
+    <div class="section-header">
+        <h2 data-i18n="latestRequests">Dernières demandes</h2>
+    </div>
+
+    <div id="postsFeed">
+        <p style="text-align:center; color:#6B778C; padding:20px;" data-i18n="loading">Chargement des demandes...</p>
+    </div>
+</div>
+
+<!-- VUE MESSAGES -->
+<div class="container" id="viewMessages" style="display:none;">
+    <div class="section-header">
+        <h2 data-i18n="myChats">Mes Conversations</h2>
+    </div>
+    <div class="chat-threads-list" id="threadsFeed">
+        <p style="text-align:center; color:#6B778C; padding:20px;" data-i18n="loading">Chargement des conversations...</p>
+    </div>
+</div>
+
+<!-- VUE PROFIL -->
+<div class="container" id="viewProfile" style="display:none;">
+    <div class="profile-card" id="profileCard"></div>
+    <div class="section-header">
+        <h2 data-i18n="myPosts">Mes publications</h2>
+    </div>
+    <div id="myPostsFeed">
+        <p style="text-align:center; color:#6B778C; padding:20px;" data-i18n="loading">Chargement de vos publications...</p>
+    </div>
+</div>
+
+<div class="fab" id="btnAddPost">+</div>
+
+<nav>
+    <div class="active" id="navHome"><span>🏠</span><span data-i18n="navHome">Accueil</span></div>
+    <div id="navSearch"><span>🔍</span><span data-i18n="navSearch">Recherche</span></div>
+    <div id="navPublish"><span>➕</span><span data-i18n="navPublish">Publier</span></div>
+    <div id="navMessages"><span>💬</span><span data-i18n="navMessages">Messages</span></div>
+    <div id="navProfile"><span>👤</span><span data-i18n="navProfile">Profil</span></div>
+</nav>
+
+<!-- MODALE CHAT PRIVE -->
+<div class="chat-modal" id="chatModal">
+    <div class="chat-modal-header">
+        <button id="btnCloseChat" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;">←</button>
+        <h3 id="chatTargetName">Discussion</h3>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <form class="chat-input-bar" id="chatForm">
+        <button type="button" class="btn-mic" id="btnMic">🎙️</button>
+        <input type="text" id="chatInput" placeholder="Saisissez un message..." data-i18n-ph="chatPlaceholder" autocomplete="off">
+        <button type="submit" data-i18n="send">Envoyer</button>
+    </form>
+</div>
+
+<!-- MODALE AUTHENTIFICATION -->
+<div class="modal" id="authModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 data-i18n="loginTitle">Connexion</h3>
+            <button class="close-btn" id="btnCloseAuth">&times;</button>
+        </div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label data-i18n="emailLabel">Email</label>
+                <input type="email" id="loginEmail" required placeholder="votre@email.com">
+            </div>
+            <div class="form-group">
+                <label data-i18n="passLabel">Mot de passe</label>
+                <input type="password" id="loginPassword" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn-primary" data-i18n="loginBtn">Se connecter</button>
+            <p style="text-align:center; margin-top:10px; font-size:12px; color:#6B778C;">
+                <span data-i18n="noAccount">Pas encore de compte ?</span> <a id="linkToRegister" style="color:var(--primary); font-weight:700;" data-i18n="registerLink">S'inscrire</a>
+            </p>
+        </form>
+
+        <form id="registerForm" style="display:none;">
+            <div class="form-group">
+                <label data-i18n="nameLabel">Nom complet</label>
+                <input type="text" id="regName" required placeholder="Ex: Saley Harouna">
+            </div>
+            <div class="form-group">
+                <label data-i18n="emailLabel">Email</label>
+                <input type="email" id="regEmail" required placeholder="votre@email.com">
+            </div>
+            <div class="form-group">
+                <label data-i18n="passLabel">Mot de passe</label>
+                <input type="password" id="regPassword" required placeholder="Min. 6 caractères">
+            </div>
+            <button type="submit" class="btn-primary" data-i18n="createAccountBtn">Créer mon compte</button>
+            <p style="text-align:center; margin-top:10px; font-size:12px; color:#6B778C;">
+                <span data-i18n="alreadyAccount">Déjà inscrit ?</span> <a id="linkToLogin" style="color:var(--primary); font-weight:700;" data-i18n="loginLink">Se connecter</a>
+            </p>
+        </form>
+    </div>
+</div>
+
+<!-- MODALE CRÉATION -->
+<div class="modal" id="postModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 data-i18n="createPostTitle">Publier une demande</h3>
+            <button class="close-btn" id="btnClosePost">&times;</button>
+        </div>
+        <form id="createPostForm">
+            <div class="form-group">
+                <label data-i18n="postTitleLabel">Titre de votre demande *</label>
+                <input type="text" id="postTitleInput" placeholder="Ex : Recherche urgente de sang O+..." data-i18n-ph="postTitlePh" required>
+            </div>
+            <div class="form-group">
+                <label data-i18n="postDescLabel">Description *</label>
+                <textarea id="postDescInput" rows="3" placeholder="Décrivez votre besoin en détail..." data-i18n-ph="postDescPh" required></textarea>
+            </div>
+            <div class="form-group">
+                <label data-i18n="postCatLabel">Catégorie *</label>
+                <select id="postCategorySelect">
+                    <option value="Urgence">🚨 Urgence</option>
+                    <option value="Santé">❤️ Santé</option>
+                    <option value="Emploi">💼 Emploi</option>
+                    <option value="Logement">🏠 Logement</option>
+                    <option value="Éducation">🎓 Éducation</option>
+                    <option value="Bénévolat" selected>🤝 Bénévolat</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label data-i18n="postCityLabel">Localisation *</label>
+                <input type="text" id="postCityInput" placeholder="Ex: Niamey, Niger" data-i18n-ph="postCityPh" required>
+            </div>
+            <div class="form-group">
+                <label data-i18n="postPhoneLabel">Numéro WhatsApp *</label>
+                <input type="tel" id="postPhoneInput" placeholder="Ex: 22790000000" required>
+            </div>
+            <div class="form-group">
+                <label data-i18n="postUrgencyLabel">Niveau d'urgence</label>
+                <div class="urgency-selector">
+                    <div class="urgency-btn" data-level="Faible" data-i18n="lowUrgency">🟢 Faible</div>
+                    <div class="urgency-btn selected" data-level="Urgent" data-i18n="highUrgency">🔴 Urgent</div>
+                </div>
+            </div>
+            <button type="submit" class="btn-primary" data-i18n="publishBtn">Publier la demande</button>
+        </form>
+    </div>
+</div>
+
+<!-- TRADUCTIONS JS & FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { 
+    getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, 
+    serverTimestamp, doc, updateDoc, arrayUnion, arrayRemove, deleteDoc, setDoc, getDoc 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { 
+    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, 
+    onAuthStateChanged, updateProfile 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { 
+    getStorage, ref, uploadBytes, getDownloadURL 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBaxm-a7gnVFfSfiHQjC1I1G_qAw-TrggQ",
+  authDomain: "sociomarket-e2899.firebaseapp.com",
+  databaseURL: "https://sociomarket-e2899-default-rtdb.firebaseio.com",
+  projectId: "sociomarket-e2899",
+  storageBucket: "sociomarket-e2899.firebasestorage.app",
+  messagingSenderId: "365946882922",
+  appId: "1:365946882922:web:86fcc9f79eaf36478b7313"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+const storage = getStorage(app);
+
+/* ==========================================
+   DICTIONNAIRE MULTILINGUE (i18n)
+   ========================================== */
+const translations = {
+    fr: {
+        login: "Connexion",
+        profile: "Profil",
+        notifications: "Notifications",
+        noNotif: "Aucune notification",
+        searchPlaceholder: "Rechercher une aide, un lieu...",
+        catAll: "Toutes",
+        catUrgent: "Urgence",
+        catHealth: "Santé",
+        catJob: "Emploi",
+        catHousing: "Logement",
+        catEdu: "Éducation",
+        catVolunteer: "Bénévolat",
+        latestRequests: "Dernières demandes",
+        loading: "Chargement...",
+        myChats: "Mes Conversations",
+        myPosts: "Mes publications",
+        navHome: "Accueil",
+        navSearch: "Recherche",
+        navPublish: "Publier",
+        navMessages: "Messages",
+        navProfile: "Profil",
+        btnChat: "💬 Chat",
+        btnHelp: "🤝 Aider",
+        btnHelped: "✅ Proposé",
+        urgentBadge: "🚨 Urgent",
+        verifiedBadge: "✔ Vérifié",
+        noPostFound: "Aucune demande trouvée.",
+        logoutBtn: "Déconnexion",
+        chatPlaceholder: "Saisissez un message...",
+        send: "Envoyer",
+        loginTitle: "Connexion",
+        emailLabel: "Email",
+        passLabel: "Mot de passe",
+        loginBtn: "Se connecter",
+        noAccount: "Pas encore de compte ?",
+        registerLink: "S'inscrire",
+        nameLabel: "Nom complet",
+        createAccountBtn: "Créer mon compte",
+        alreadyAccount: "Déjà inscrit ?",
+        loginLink: "Se connecter",
+        createPostTitle: "Publier une demande",
+        postTitleLabel: "Titre de votre demande *",
+        postTitlePh: "Ex : Recherche urgente de sang O+...",
+        postDescLabel: "Description *",
+        postDescPh: "Décrivez votre besoin en détail...",
+        postCatLabel: "Catégorie *",
+        postCityLabel: "Localisation *",
+        postCityPh: "Ex: Niamey, Niger",
+        postPhoneLabel: "Numéro WhatsApp *",
+        postUrgencyLabel: "Niveau d'urgence",
+        lowUrgency: "🟢 Faible",
+        highUrgency: "🔴 Urgent",
+        publishBtn: "Publier la demande"
+    },
+    ha: {
+        login: "Shiga",
+        profile: "Tarihi",
+        notifications: "Sanarwa",
+        noNotif: "Babu sabuwar sanarwa",
+        searchPlaceholder: "Nemi taimako ko wuri...",
+        catAll: "Dukkanin",
+        catUrgent: "Gaggawa",
+        catHealth: "Lafiya",
+        catJob: "Aiki",
+        catHousing: "Gida",
+        catEdu: "Ilimi",
+        catVolunteer: "Agaji",
+        latestRequests: "Taimakon kwanan nan",
+        loading: "Yana dakowa...",
+        myChats: "Tattaunawa ta",
+        myPosts: "Rubutuna",
+        navHome: "Gida",
+        navSearch: "Bincike",
+        navPublish: "Bada taimako",
+        navMessages: "Saƙonni",
+        navProfile: "Tarihi",
+        btnChat: "💬 Tattauna",
+        btnHelp: "🤝 Taimaka",
+        btnHelped: "✅ An tura",
+        urgentBadge: "🚨 Gaggawa",
+        verifiedBadge: "✔ Tabbatacce",
+        noPostFound: "Babu wani taimako da aka samu.",
+        logoutBtn: "Fita",
+        chatPlaceholder: "Rubuta saƙo...",
+        send: "Tura",
+        loginTitle: "Shiga Shafi",
+        emailLabel: "Imel",
+        passLabel: "Kalmar sirri",
+        loginBtn: "Shiga",
+        noAccount: "Baka da asutsu?",
+        registerLink: "Rijista",
+        nameLabel: "Cikakken suna",
+        createAccountBtn: "Buɗe Asusu",
+        alreadyAccount: "Kana da asusu?",
+        loginLink: "Shiga",
+        createPostTitle: "Bada Bukatar Taimako",
+        postTitleLabel: "Kani ko Taken Taimako *",
+        postTitlePh: "Misali: Neman jini cikin gaggawa...",
+        postDescLabel: "Bayanai *",
+        postDescPh: "Yi bayani daki-daki...",
+        postCatLabel: "Rukuni *",
+        postCityLabel: "Wuri/Gari *",
+        postCityPh: "Misali: Niamey, Niger",
+        postPhoneLabel: "Lambar WhatsApp *",
+        postUrgencyLabel: "Matakin gaggawa",
+        lowUrgency: "🟢 Ba gaggawa ba",
+        highUrgency: "🔴 Gaggawa",
+        publishBtn: "Tura Bukata"
+    },
+    ff: {
+        login: "Seŋo",
+        profile: "Yeeso",
+        notifications: "Kabaaruuji",
+        noNotif: "Alaa kabaaruuji",
+        searchPlaceholder: "Ɓeɗu walliinde walla nokku...",
+        catAll: "Monommbo",
+        catUrgent: "Jaawɗum",
+        catHealth: "Cellal",
+        catJob: "Gollal",
+        catHousing: "Soodo",
+        catEdu: "Janngde",
+        catVolunteer: "Ballal",
+        latestRequests: "Torraaji kesi",
+        loading: "Ɗon loowa...",
+        myChats: "Haalaaji am",
+        myPosts: "Winnditaaɗe am",
+        navHome: "Wuro",
+        navSearch: "Yildu",
+        navPublish: "Wallu",
+        navMessages: "Battaane",
+        navProfile: "Yeeso",
+        btnChat: "💬 Yewteree",
+        btnHelp: "🤝 Wallu",
+        btnHelped: "✅ Wallitiima",
+        urgentBadge: "🚨 Jaawɗum",
+        verifiedBadge: "✔ Goonga",
+        noPostFound: "Alaa ɗaɓɓaande heɓaa.",
+        logoutBtn: "Yalti",
+        chatPlaceholder: "Winndu battaane...",
+        send: "Neldu",
+        loginTitle: "Seŋaade",
+        emailLabel: "Imel",
+        passLabel: "Finnde",
+        loginBtn: "Seŋo",
+        noAccount: "A alaano konto?",
+        registerLink: "Sostu konto",
+        nameLabel: "Innde timmunde",
+        createAccountBtn: "Mah konto",
+        alreadyAccount: "Aɗa jogii konto?",
+        loginLink: "Seŋo",
+        createPostTitle: "Winnditu walliinde",
+        postTitleLabel: "Innde walliinde *",
+        postTitlePh: "Yerru: Ɗaɓɓitaande ƴiiƴam...",
+        postDescLabel: "Ciftinoore *",
+        postDescPh: "Ciftinaa ko ɗaɓɓataa...",
+        postCatLabel: "Fedde *",
+        postCityLabel: "Nokku *",
+        postCityPh: "Yerru: Niamey, Niger",
+        postPhoneLabel: "Lamba WhatsApp *",
+        postUrgencyLabel: "Yaawre",
+        lowUrgency: "🟢 Pamaro",
+        highUrgency: "🔴 Jaawɗum",
+        publishBtn: "Bayyinu"
+    },
+    en: {
+        login: "Login",
+        profile: "Profile",
+        notifications: "Notifications",
+        noNotif: "No notifications",
+        searchPlaceholder: "Search help, location...",
+        catAll: "All",
+        catUrgent: "Urgent",
+        catHealth: "Health",
+        catJob: "Jobs",
+        catHousing: "Housing",
+        catEdu: "Education",
+        catVolunteer: "Volunteering",
+        latestRequests: "Latest Requests",
+        loading: "Loading...",
+        myChats: "My Messages",
+        myPosts: "My Posts",
+        navHome: "Home",
+        navSearch: "Search",
+        navPublish: "Post",
+        navMessages: "Messages",
+        navProfile: "Profile",
+        btnChat: "💬 Chat",
+        btnHelp: "🤝 Help",
+        btnHelped: "✅ Offered",
+        urgentBadge: "🚨 Urgent",
+        verifiedBadge: "✔ Verified",
+        noPostFound: "No requests found.",
+        logoutBtn: "Logout",
+        chatPlaceholder: "Type a message...",
+        send: "Send",
+        loginTitle: "Login",
+        emailLabel: "Email",
+        passLabel: "Password",
+        loginBtn: "Login",
+        noAccount: "Don't have an account?",
+        registerLink: "Sign up",
+        nameLabel: "Full Name",
+        createAccountBtn: "Create Account",
+        alreadyAccount: "Already registered?",
+        loginLink: "Login",
+        createPostTitle: "Create Help Request",
+        postTitleLabel: "Request Title *",
+        postTitlePh: "e.g., Urgent need for O+ blood...",
+        postDescLabel: "Description *",
+        postDescPh: "Describe your need in detail...",
+        postCatLabel: "Category *",
+        postCityLabel: "Location *",
+        postCityPh: "e.g., Niamey, Niger",
+        postPhoneLabel: "WhatsApp Number *",
+        postUrgencyLabel: "Urgency Level",
+        lowUrgency: "🟢 Low",
+        highUrgency: "🔴 Urgent",
+        publishBtn: "Publish Request"
+    }
+};
+
+let currentLang = localStorage.getItem("abokina_lang") || "fr";
+
+function applyTranslations(lang) {
+    currentLang = lang;
+    localStorage.setItem("abokina_lang", lang);
+    const dict = translations[lang] || translations.fr;
+
+    // Traduction des éléments avec data-i18n
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (dict[key]) el.textContent = dict[key];
+    });
+
+    // Traduction des placeholders
+    document.querySelectorAll("[data-i18n-ph]").forEach(el => {
+        const key = el.getAttribute("data-i18n-ph");
+        if (dict[key]) el.placeholder = dict[key];
+    });
+
+    // Re-rendre le fil d'actualité pour mettre à jour les boutons d'action
+    if (allFetchedPosts.length > 0) renderFilteredPosts(allFetchedPosts);
+}
+
+// Initialisation du sélecteur
+const langSelect = document.getElementById("langSelect");
+langSelect.value = currentLang;
+langSelect.addEventListener("change", (e) => applyTranslations(e.target.value));
+
+/* ==========================================
+   LOGIQUE PRINCIPALE APP
+   ========================================== */
+let currentUser = null;
+let selectedUrgency = "Urgent";
+let currentCategoryFilter = "Toutes";
+let allFetchedPosts = [];
+let activeChatId = null;
+let unsubscribeFeed = null;
+let unsubscribeMyPosts = null;
+let unsubscribeNotifs = null;
+let unsubscribeThreads = null;
+let unsubscribeChat = null;
+
+let mediaRecorder = null;
+let audioChunks = [];
+let isRecording = false;
+
+onAuthStateChanged(auth, (user) => {
+    currentUser = user;
+    const authContainer = document.getElementById("authContainer");
+    if (user) {
+        authContainer.innerHTML = `<button class="user-pill" id="btnGoProfile" data-i18n="profile">${translations[currentLang].profile}</button>`;
+        document.getElementById("btnGoProfile")?.addEventListener("click", showProfileView);
+        listenToNotifications(user.uid);
+    } else {
+        authContainer.innerHTML = `<button class="user-pill" id="btnOpenAuthDyn" data-i18n="login">${translations[currentLang].login}</button>`;
+        document.getElementById("btnOpenAuthDyn")?.addEventListener("click", () => document.getElementById("authModal").classList.add("active"));
+        if(unsubscribeNotifs) unsubscribeNotifs();
+        resetNotifUI();
+        showHomeView();
+    }
+    loadPosts(currentCategoryFilter);
+});
+
+const viewHome = document.getElementById("viewHome");
+const viewMessages = document.getElementById("viewMessages");
+const viewProfile = document.getElementById("viewProfile");
+
+const navHome = document.getElementById("navHome");
+const navMessages = document.getElementById("navMessages");
+const navProfile = document.getElementById("navProfile");
+
+function hideAllViews() {
+    viewHome.style.display = "none";
+    viewMessages.style.display = "none";
+    viewProfile.style.display = "none";
+    navHome.classList.remove("active");
+    navMessages.classList.remove("active");
+    navProfile.classList.remove("active");
+}
+
+function showHomeView() {
+    hideAllViews();
+    viewHome.style.display = "block";
+    navHome.classList.add("active");
+}
+
+function showMessagesView() {
+    if(!currentUser) return authModal.classList.add("active");
+    hideAllViews();
+    viewMessages.style.display = "block";
+    navMessages.classList.add("active");
+    loadChatThreads();
+}
+
+function showProfileView() {
+    if(!currentUser) return authModal.classList.add("active");
+    hideAllViews();
+    viewProfile.style.display = "block";
+    navProfile.classList.add("active");
+    renderProfilePage();
+}
+
+navHome.addEventListener("click", showHomeView);
+navMessages.addEventListener("click", showMessagesView);
+navProfile.addEventListener("click", showProfileView);
+document.getElementById("navSearch").addEventListener("click", () => {
+    showHomeView();
+    document.getElementById("searchInput").focus();
+});
+
+document.getElementById("searchInput").addEventListener("input", (e) => {
+    const searchTerm = e.target.value.toLowerCase().trim();
+    if(viewHome.style.display === "none") showHomeView();
+
+    if(!searchTerm) return renderFilteredPosts(allFetchedPosts);
+
+    const filtered = allFetchedPosts.filter(p => {
+        const title = (p.data.title || "").toLowerCase();
+        const desc = (p.data.description || "").toLowerCase();
+        const city = (p.data.city || "").toLowerCase();
+        return title.includes(searchTerm) || desc.includes(searchTerm) || city.includes(searchTerm);
+    });
+    renderFilteredPosts(filtered);
+});
+
+// CHAT & VOCAUX
+async function startPrivateChat(targetUserId, targetUserName, postTitle) {
+    if(!currentUser) return authModal.classList.add("active");
+    if(currentUser.uid === targetUserId) return alert("Vous ne pouvez pas vous contacter vous-même.");
+
+    const chatId = [currentUser.uid, targetUserId].sort().join("_");
+    const chatRef = doc(db, "chats", chatId);
+
+    const chatSnap = await getDoc(chatRef);
+    if(!chatSnap.exists()) {
+        await setDoc(chatRef, {
+            participants: [currentUser.uid, targetUserId],
+            participantNames: {
+                [currentUser.uid]: currentUser.displayName || currentUser.email.split('@')[0],
+                [targetUserId]: targetUserName
+            },
+            lastMessage: `Aide: "${postTitle}"`,
+            updatedAt: serverTimestamp()
+        });
+    }
+
+    openChatWindow(chatId, targetUserName);
+}
+
+function openChatWindow(chatId, targetName) {
+    activeChatId = chatId;
+    document.getElementById("chatTargetName").textContent = targetName;
+    document.getElementById("chatModal").classList.add("active");
+    
+    if(unsubscribeChat) unsubscribeChat();
+    const q = query(collection(db, "chats", chatId, "messages"), orderBy("createdAt", "asc"));
+
+    unsubscribeChat = onSnapshot(q, (snapshot) => {
+        const msgContainer = document.getElementById("chatMessages");
+        msgContainer.innerHTML = "";
+        snapshot.forEach(docSnap => {
+            const m = docSnap.data();
+            const isMe = m.senderId === currentUser.uid;
+            const bubble = document.createElement("div");
+            bubble.className = `msg-bubble ${isMe ? 'me' : 'other'}`;
+            
+            if (m.type === "audio") {
+                bubble.innerHTML = `
+                    <div style="font-size:11px; margin-bottom:4px; opacity:0.8;">🎙️ Vocal</div>
+                    <audio controls src="${m.audioUrl}"></audio>
+                `;
+            } else {
+                bubble.textContent = m.text;
+            }
+            
+            msgContainer.appendChild(bubble);
+        });
+        msgContainer.scrollTop = msgContainer.scrollHeight;
+    });
+}
+
+document.getElementById("btnCloseChat").addEventListener("click", () => {
+    document.getElementById("chatModal").classList.remove("active");
+    if(unsubscribeChat) unsubscribeChat();
+});
+
+const btnMic = document.getElementById("btnMic");
+btnMic.addEventListener("click", async () => {
+    if (!isRecording) {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                await sendAudioMessage(audioBlob);
+            };
+
+            mediaRecorder.start();
+            isRecording = true;
+            btnMic.classList.add("recording");
+            btnMic.textContent = "⏹️";
+        } catch (err) {
+            alert("Microphone requis.");
+        }
+    } else {
+        mediaRecorder.stop();
+        isRecording = false;
+        btnMic.classList.remove("recording");
+        btnMic.textContent = "🎙️";
+    }
+});
+
+async function sendAudioMessage(audioBlob) {
+    if(!activeChatId || !currentUser) return;
+    
+    const audioRef = ref(storage, `chats/${activeChatId}/${Date.now()}.mp3`);
+    await uploadBytes(audioRef, audioBlob);
+    const downloadURL = await getDownloadURL(audioRef);
+
+    await addDoc(collection(db, "chats", activeChatId, "messages"), {
+        senderId: currentUser.uid,
+        type: "audio",
+        audioUrl: downloadURL,
+        createdAt: serverTimestamp()
+    });
+
+    await updateDoc(doc(db, "chats", activeChatId), {
+        lastMessage: "🎙️ Vocal",
+        updatedAt: serverTimestamp()
+    });
+}
+
+document.getElementById("chatForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const input = document.getElementById("chatInput");
+    const text = input.value.trim();
+    if(!text || !activeChatId) return;
+
+    input.value = "";
+    await addDoc(collection(db, "chats", activeChatId, "messages"), {
+        senderId: currentUser.uid,
+        type: "text",
+        text: text,
+        createdAt: serverTimestamp()
+    });
+
+    await updateDoc(doc(db, "chats", activeChatId), {
+        lastMessage: text,
+        updatedAt: serverTimestamp()
+    });
+});
+
+function loadChatThreads() {
+    if(!currentUser) return;
+    if(unsubscribeThreads) unsubscribeThreads();
+
+    const q = query(collection(db, "chats"), where("participants", "array-contains", currentUser.uid), orderBy("updatedAt", "desc"));
+
+    unsubscribeThreads = onSnapshot(q, (snapshot) => {
+        const feed = document.getElementById("threadsFeed");
+        feed.innerHTML = "";
+        if(snapshot.empty) {
+            feed.innerHTML = `<p style="text-align:center; color:#6B778C; padding:20px;">${translations[currentLang].noPostFound}</p>`;
+            return;
+        }
+
+        snapshot.forEach(docSnap => {
+            const chatData = docSnap.data();
+            const otherUserId = chatData.participants.find(id => id !== currentUser.uid);
+            const otherUserName = (chatData.participantNames && chatData.participantNames[otherUserId]) || "Utilisateur";
+
+            const item = document.createElement("div");
+            item.className = "thread-card";
+            item.innerHTML = `
+                <div class="avatar">${otherUserName.charAt(0).toUpperCase()}</div>
+                <div class="thread-info">
+                    <h4>${escapeHtml(otherUserName)}</h4>
+                    <p>${escapeHtml(chatData.lastMessage || "")}</p>
+                </div>
+            `;
+            item.addEventListener("click", () => openChatWindow(docSnap.id, otherUserName));
+            feed.appendChild(item);
+        });
+    });
+}
+
+// PROFIL
+function renderProfilePage() {
+    if(!currentUser) return;
+    const profileCard = document.getElementById("profileCard");
+    const name = currentUser.displayName || currentUser.email.split('@')[0];
+
+    profileCard.innerHTML = `
+        <div class="profile-avatar">${name.charAt(0).toUpperCase()}</div>
+        <h3>${escapeHtml(name)}</h3>
+        <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">${escapeHtml(currentUser.email)}</p>
+        <button class="btn-logout" id="btnLogout" data-i18n="logoutBtn">${translations[currentLang].logoutBtn}</button>
+    `;
+
+    document.getElementById("btnLogout").addEventListener("click", () => {
+        signOut(auth);
+        showHomeView();
+    });
+
+    if(unsubscribeMyPosts) unsubscribeMyPosts();
+    const q = query(collection(db, "posts"), where("authorId", "==", currentUser.uid), orderBy("createdAt", "desc"));
+    
+    unsubscribeMyPosts = onSnapshot(q, (snapshot) => {
+        const myFeed = document.getElementById("myPostsFeed");
+        myFeed.innerHTML = "";
+        if(snapshot.empty) {
+            myFeed.innerHTML = `<p style="text-align:center; color:#6B778C; padding:20px;">${translations[currentLang].noPostFound}</p>`;
+            return;
+        }
+        snapshot.forEach(docSnap => myFeed.appendChild(buildPostCard(docSnap.id, docSnap.data())));
+    });
+}
+
+// NOTIFICATIONS
+function listenToNotifications(userId) {
+    const q = query(collection(db, "notifications"), where("targetUserId", "==", userId), orderBy("createdAt", "desc"));
+
+    unsubscribeNotifs = onSnapshot(q, (snapshot) => {
+        const notifBadge = document.getElementById("notifBadge");
+        const notifList = document.getElementById("notifList");
+        const notifCountText = document.getElementById("notifCountText");
+        let unreadCount = snapshot.docs.length;
+
+        if (unreadCount > 0) {
+            notifBadge.style.display = "flex";
+            notifBadge.textContent = unreadCount > 9 ? "9+" : unreadCount;
+            notifCountText.textContent = `${unreadCount} nouvelle(s)`;
+            notifList.innerHTML = "";
+            snapshot.forEach(docSnap => {
+                const n = docSnap.data();
+                const item = document.createElement("div");
+                item.className = "notif-item unread";
+                item.innerHTML = `
+                    <div style="font-size:16px;">🤝</div>
+                    <div>
+                        <strong>${escapeHtml(n.fromName)}</strong> propose son aide pour <strong>"${escapeHtml(n.postTitle)}"</strong>.
+                        <p>${formatTimeAgo(n.createdAt)}</p>
+                    </div>
+                `;
+                notifList.appendChild(item);
+            });
+        } else {
+            resetNotifUI();
+        }
+    });
+}
+
+function resetNotifUI() {
+    document.getElementById("notifBadge").style.display = "none";
+    document.getElementById("notifCountText").textContent = "0 nouvelle(s)";
+    document.getElementById("notifList").innerHTML = `<p style="text-align:center; padding:15px; font-size:12px; color:var(--text-muted);">${translations[currentLang].noNotif}</p>`;
+}
+
+document.getElementById("btnNotif").addEventListener("click", (e) => {
+    e.stopPropagation();
+    document.getElementById("notifPopover").classList.toggle("active");
+});
+document.addEventListener("click", () => document.getElementById("notifPopover").classList.remove("active"));
+
+// MODALES UI
+const authModal = document.getElementById("authModal");
+const postModal = document.getElementById("postModal");
+document.getElementById("btnOpenAuth")?.addEventListener("click", () => authModal.classList.add("active"));
+document.getElementById("btnCloseAuth").addEventListener("click", () => authModal.classList.remove("active"));
+document.getElementById("btnClosePost").addEventListener("click", () => postModal.classList.remove("active"));
+document.getElementById("btnAddPost").addEventListener("click", () => {
+    if(!currentUser) return authModal.classList.add("active");
+    postModal.classList.add("active");
+});
+document.getElementById("navPublish").addEventListener("click", () => {
+    if(!currentUser) return authModal.classList.add("active");
+    postModal.classList.add("active");
+});
+
+document.getElementById("linkToRegister").addEventListener("click", () => {
+    document.getElementById("loginForm").style.display = "none";
+    document.getElementById("registerForm").style.display = "block";
+});
+document.getElementById("linkToLogin").addEventListener("click", () => {
+    document.getElementById("registerForm").style.display = "none";
+    document.getElementById("loginForm").style.display = "block";
+});
+
+document.querySelectorAll(".urgency-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+        document.querySelectorAll(".urgency-btn").forEach(b => b.classList.remove("selected"));
+        e.target.classList.add("selected");
+        selectedUrgency = e.target.getAttribute("data-level");
+    });
+});
+
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    try {
+        await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value, document.getElementById("loginPassword").value);
+        authModal.classList.remove("active");
+    } catch(err) { alert("Erreur de connexion"); }
+});
+
+document.getElementById("registerForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    try {
+        const res = await createUserWithEmailAndPassword(auth, document.getElementById("regEmail").value, document.getElementById("regPassword").value);
+        await updateProfile(res.user, { displayName: document.getElementById("regName").value });
+        authModal.classList.remove("active");
+    } catch(err) { alert("Erreur d'inscription"); }
+});
+
+document.getElementById("createPostForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if(!currentUser) return;
+
+    try {
+        await addDoc(collection(db, "posts"), {
+            title: document.getElementById("postTitleInput").value.trim(),
+            description: document.getElementById("postDescInput").value.trim(),
+            category: document.getElementById("postCategorySelect").value,
+            city: document.getElementById("postCityInput").value.trim(),
+            phone: document.getElementById("postPhoneInput").value.replace(/[^0-9]/g, ''),
+            urgency: selectedUrgency,
+            authorId: currentUser.uid,
+            authorName: currentUser.displayName || currentUser.email.split('@')[0],
+            helpers: [],
+            likedBy: [],
+            createdAt: serverTimestamp()
+        });
+
+        document.getElementById("createPostForm").reset();
+        postModal.classList.remove("active");
+    } catch(err) { alert("Erreur lors de la publication"); }
+});
+
+// CARDS DE POSTS
+function loadPosts(category = "Toutes") {
+    currentCategoryFilter = category;
+    if(unsubscribeFeed) unsubscribeFeed();
+
+    const postsRef = collection(db, "posts");
+    let q = (category !== "Toutes") 
+        ? query(postsRef, where("category", "==", category), orderBy("createdAt", "desc"))
+        : query(postsRef, orderBy("createdAt", "desc"));
+
+    unsubscribeFeed = onSnapshot(q, (snapshot) => {
+        allFetchedPosts = [];
+        snapshot.forEach(docSnap => allFetchedPosts.push({ id: docSnap.id, data: docSnap.data() }));
+
+        const searchVal = document.getElementById("searchInput").value.toLowerCase().trim();
+        if(searchVal) {
+            document.getElementById("searchInput").dispatchEvent(new Event('input'));
+        } else {
+            renderFilteredPosts(allFetchedPosts);
+        }
+    });
+}
+
+function renderFilteredPosts(postsList) {
+    const feed = document.getElementById("postsFeed");
+    feed.innerHTML = "";
+    if(postsList.length === 0) {
+        feed.innerHTML = `<p style="text-align:center; color:#6B778C; padding:20px;">${translations[currentLang].noPostFound}</p>`;
+        return;
+    }
+    postsList.forEach(item => feed.appendChild(buildPostCard(item.id, item.data)));
+}
+
+function buildPostCard(id, data) {
+    const dict = translations[currentLang] || translations.fr;
+    const isOwner = currentUser && currentUser.uid === data.authorId;
+    const isHelper = currentUser && data.helpers && data.helpers.includes(currentUser.uid);
+    const likedBy = data.likedBy || [];
+    const isLiked = currentUser && likedBy.includes(currentUser.uid);
+    const cleanPhone = data.phone ? data.phone.replace(/[^0-9]/g, '') : '';
+    const whatsappMsg = encodeURIComponent(`Bonjour ${data.authorName}, je vous contacte depuis Abokina pour votre demande : "${data.title}"`);
+    const whatsappUrl = cleanPhone ? `https://wa.me/${cleanPhone}?text=${whatsappMsg}` : '#';
+
+    let thumbUrl = "https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?w=200&q=80"; 
+    if (data.category === "Logement") thumbUrl = "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=200&q=80";
+    else if (data.category === "Emploi") thumbUrl = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&q=80";
+    else if (data.category === "Éducation") thumbUrl = "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=200&q=80";
+    else if (data.category === "Bénévolat") thumbUrl = "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=200&q=80";
+
+    const card = document.createElement("div");
+    card.className = "post-card";
+    card.innerHTML = `
+        <div class="post-header">
+            <div class="author-wrapper">
+                <div class="avatar">${(data.authorName || 'A').charAt(0).toUpperCase()}</div>
+                <div class="author-info">
+                    <h4>${escapeHtml(data.authorName || "Membre")}</h4>
+                    <p>📍 ${escapeHtml(data.city || "Niger")} • ${formatTimeAgo(data.createdAt)}</p>
+                </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+                <span class="badge-tag ${data.urgency === 'Urgent' ? 'badge-urgent' : 'badge-verified'}">
+                    ${data.urgency === 'Urgent' ? dict.urgentBadge : dict.verifiedBadge}
+                </span>
+                ${isOwner ? `<button class="btn-delete-icon" title="Supprimer">🗑️</button>` : ''}
+            </div>
+        </div>
+
+        <div class="post-body">
+            <div class="post-content">
+                <div class="post-title">${escapeHtml(data.title)}</div>
+                <div class="post-desc">${escapeHtml(data.description)}</div>
+            </div>
+            <img src="${data.imageUrl || thumbUrl}" alt="Illustration" class="post-thumb">
+        </div>
+
+        <div class="post-footer">
+            <div class="post-stats">
+                <span class="stat-item btn-like-action ${isLiked ? 'liked' : ''}">
+                    ${isLiked ? '❤️' : '🤍'} ${likedBy.length}
+                </span>
+            </div>
+            <div style="display:flex; gap:6px;">
+                ${!isOwner ? `<button class="btn-help-pill btn-chat-direct" style="background:#EAE6FF; color:#403294;">${dict.btnChat}</button>` : ''}
+                ${cleanPhone ? `<a href="${whatsappUrl}" target="_blank" style="text-decoration:none; background:#25D366; color:white;" class="btn-help-pill">📱 WhatsApp</a>` : ''}
+                <button class="btn-help-pill btn-help-action" ${isHelper ? 'disabled' : ''}>
+                    ${isHelper ? dict.btnHelped : dict.btnHelp}
+                </button>
+            </div>
+        </div>
+    `;
+
+    if(isOwner) {
+        card.querySelector(".btn-delete-icon").addEventListener("click", () => deleteDoc(doc(db, "posts", id)));
+    } else {
+        card.querySelector(".btn-chat-direct")?.addEventListener("click", () => {
+            startPrivateChat(data.authorId, data.authorName || "Auteur", data.title);
+        });
+    }
+
+    card.querySelector(".btn-like-action").addEventListener("click", async () => {
+        if(!currentUser) return authModal.classList.add("active");
+        const postRef = doc(db, "posts", id);
+        if (isLiked) await updateDoc(postRef, { likedBy: arrayRemove(currentUser.uid) });
+        else await updateDoc(postRef, { likedBy: arrayUnion(currentUser.uid) });
+    });
+
+    card.querySelector(".btn-help-action").addEventListener("click", async () => {
+        if(!currentUser) return authModal.classList.add("active");
+        await updateDoc(doc(db, "posts", id), { helpers: arrayUnion(currentUser.uid) });
+        if (data.authorId !== currentUser.uid) {
+            await addDoc(collection(db, "notifications"), {
+                targetUserId: data.authorId,
+                fromName: currentUser.displayName || currentUser.email.split('@')[0],
+                postTitle: data.title,
+                createdAt: serverTimestamp()
+            });
+        }
+    });
+
+    return card;
+}
+
+function formatTimeAgo(ts) {
+    if(!ts) return "À l'instant";
+    const d = ts.toDate();
+    const diff = Math.floor((new Date() - d) / 1000);
+    if(diff < 60) return "À l'instant";
+    if(diff < 3600) return `Il y a ${Math.floor(diff/60)} min`;
+    if(diff < 86400) return `Il y a ${Math.floor(diff/3600)} h`;
+    return d.toLocaleDateString('fr-FR');
+}
+
+function escapeHtml(str) {
+    if(!str) return "";
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+document.getElementById("categoriesContainer").addEventListener("click", (e) => {
+    const item = e.target.closest(".cat-item");
+    if(!item) return;
+    document.querySelectorAll(".cat-item").forEach(c => c.classList.remove("active"));
+    item.classList.add("active");
+    loadPosts(item.getAttribute("data-category"));
+});
+
+// Application initiale des traductions
+applyTranslations(currentLang);
+loadPosts();
+</script>
+
+</body>
+</html>
